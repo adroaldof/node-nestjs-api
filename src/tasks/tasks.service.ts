@@ -1,7 +1,9 @@
 import uuid from 'uuid/v1';
-import { CreateTaskDto, UpdateTaskDto, FilterTaskDto } from './dto';
-import { Injectable } from '@nestjs/common';
-import { TaskStatus, Task } from './task.model';
+
+import { Injectable, NotFoundException } from '@nestjs/common';
+
+import { CreateTaskDto, FilterTaskDto, UpdateTaskDto } from './dto';
+import { Task, TaskStatus } from './task.model';
 import { tasks } from './tasks';
 
 @Injectable()
@@ -30,13 +32,18 @@ export class TasksService {
   }
 
   detail(taskId: string): Task | null {
-    const foundIndex: number = this.tasks.findIndex(({ id }) => id === taskId);
+    const found: Task = this.tasks.find(({ id }) => id === taskId);
 
-    if (foundIndex === -1) {
-      throw new Error('not-found');
+    if (!found) {
+      throw new NotFoundException({
+        key: 'not-found',
+        error: 'Not Found',
+        message: `Could't find task with id ${taskId}`,
+        statusCode: 404,
+      });
     }
 
-    return this.tasks[foundIndex];
+    return found;
   }
 
   create(createTaskDto: CreateTaskDto): Task {
@@ -54,17 +61,15 @@ export class TasksService {
   }
 
   update(taskId: string, updateTaskDto: UpdateTaskDto): Task {
-    const toBeUpdated = this.detail(taskId);
-    const updated = { ...toBeUpdated, ...updateTaskDto };
+    const found = this.detail(taskId);
+    const updated = { ...found, ...updateTaskDto };
     const foundIndex: number = this.tasks.findIndex(({ id }) => id === taskId);
     this.tasks[foundIndex] = updated;
     return updated;
   }
 
-  remove(taskId: string): Task | null {
-    const toBeDeleted = this.detail(taskId);
-    const foundIndex: number = this.tasks.findIndex(({ id }) => id === taskId);
-    this.tasks.splice(foundIndex, 1);
-    return toBeDeleted;
+  remove(taskId: string): void {
+    this.detail(taskId);
+    this.tasks = this.tasks.filter(({ id }) => id !== taskId);
   }
 }

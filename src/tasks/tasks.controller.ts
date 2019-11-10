@@ -6,8 +6,9 @@ import {
   Param,
   Delete,
   Put,
+  Query,
 } from '@nestjs/common';
-import { CreateTaskDto, UpdateTaskDto } from './dto';
+import { CreateTaskDto, UpdateTaskDto, FilterTaskDto } from './dto';
 import { Task } from './task.model';
 import { TasksService } from './tasks.service';
 
@@ -16,8 +17,8 @@ export class TasksController {
   constructor(private taskService: TasksService) {}
 
   @Get()
-  async list(): Promise<Task[]> {
-    return this.taskService.list();
+  async list(@Query() taskFilterDto: FilterTaskDto): Promise<Task[]> {
+    return this.taskService.list(taskFilterDto);
   }
 
   @Get('/:id')

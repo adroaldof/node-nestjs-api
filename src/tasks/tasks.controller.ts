@@ -3,7 +3,8 @@ import {
 } from '@nestjs/common';
 
 import { CreateTaskDto, FilterTaskDto, UpdateTaskDto } from './dto';
-import { Task } from './task.model';
+import { TaskStatusValidationPipe } from './pipes/task-status.validation.pipe';
+import { Task, TaskStatus } from './task.model';
 import { TasksService } from './tasks.service';
 
 @Controller('tasks')
@@ -37,6 +38,18 @@ export class TasksController {
   ): Promise<Task> {
     try {
       return this.taskService.update(taskId, updateTaskDto);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @Put('/:id/status')
+  async updateStatus(
+    @Param('id') taskId: string,
+    @Body('status', TaskStatusValidationPipe) status: TaskStatus,
+  ): Promise<Task> {
+    try {
+      return this.taskService.update(taskId, { status });
     } catch (error) {
       throw error;
     }

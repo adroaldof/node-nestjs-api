@@ -12,7 +12,9 @@ export class TasksController {
   constructor(private taskService: TasksService) {}
 
   @Get()
-  async list(@Query() taskFilterDto: FilterTaskDto): Promise<Task[]> {
+  async list(
+    @Query(ValidationPipe) taskFilterDto: FilterTaskDto,
+  ): Promise<Task[]> {
     return this.taskService.list(taskFilterDto);
   }
 

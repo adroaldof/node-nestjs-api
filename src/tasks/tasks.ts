@@ -1,6 +1,6 @@
-import { Task, TaskStatus } from './task.model';
+import { TaskStatus } from './task-status.enum';
 
-export const tasks: Task[] = [
+export const tasks = [
   {
     id: 'abe74500-03f6-11ea-94d6-53df4abde6f7',
     title: 'python',

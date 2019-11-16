@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  db:
+    container_name: 'database'
+    image: 'postgres:9.5.10'
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'postgres'
+      POSTGRES_DB: 'postgres'
+    volumes:
+      - './db:/var/lib/postgresql'
+
+  api:
+    container_name: 'server'
+    image: 'node:10'
+    command: 'npm run dev'
+    working_dir: '/usr/src/app'
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: 'development'
+      DB_DRIVER: 'postgres'
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: 'postgres'
+      DB_PASSWORD: 'postgres'
+      DB_NAME: 'postgres'
+    depends_on:
+      - db
+    volumes:
+      - '.:/usr/src/app'
+

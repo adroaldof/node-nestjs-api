@@ -1,0 +1,25 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+  "plugins": ["@typescript-eslint/eslint-plugin"],
+  "parserOptions": {
+    "ecmaVersion": 2017,
+    "sourceType": "module"
+  },
+  "env": {
+    "node": true,
+    "mocha": true
+  },
+  "rules": {
+    "max-len": 0,
+    "no-use-before-define": 0,
+    "no-unused-expressions": 0,
+    "func-names": 0,
+    "arrow-body-style": 0,
+    "no-underscore-dangle": 0,
+    "react/jsx-quotes": 0,
+    "react/jsx-sort-prop-types": 0,
+    "no-confusing-arrow": 0,
+    "no-multiple-empty-lines": 0
+  }
+}

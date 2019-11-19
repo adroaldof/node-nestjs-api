@@ -19,11 +19,11 @@ export class AuthService {
   }
 
   async signIn(authCredentialsDto: AuthCredentialsDto): Promise<IAccessToken> {
-    const username = await this.userRepository.validateUserPassword(
+    const email = await this.userRepository.validateUserPassword(
       authCredentialsDto,
     );
 
-    if (!username) {
+    if (!email) {
       throw new UnauthorizedException({
         error: 'Unauthorized',
         key: 'invalid-credentials',
@@ -32,7 +32,7 @@ export class AuthService {
       });
     }
 
-    const payload: IJwtPayload = { username };
+    const payload: IJwtPayload = { email };
     const accessToken = await this.jwtService.sign(payload);
 
     return { accessToken };

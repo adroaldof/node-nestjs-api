@@ -37,7 +37,7 @@ export class TasksSeed1574130349484 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<any> {
     for (const task of tasks) {
       const userRepository = getRepository(User);
-      const user = await userRepository.findOne({ username: task.userEmail });
+      const user = await userRepository.findOne({ email: task.userEmail });
 
       if (!user) {
         return;

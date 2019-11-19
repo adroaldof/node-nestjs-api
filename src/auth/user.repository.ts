@@ -8,7 +8,7 @@ import { User } from './user.entity';
 
 const errors = {
   default: 'unknown error',
-  23505: 'duplicated username',
+  23505: 'duplicated email',
 };
 
 @EntityRepository(User)
@@ -18,10 +18,10 @@ export class UserRepository extends Repository<User> {
   }
 
   async signUp(authCredentialsDto: AuthCredentialsDto): Promise<void> {
-    const { username, password } = authCredentialsDto;
+    const { email, password } = authCredentialsDto;
 
     const user = new User();
-    user.username = username;
+    user.email = email;
     user.salt = await bcrypt.genSalt();
     user.password = await this.hashPassword(password, user.salt);
 
@@ -40,10 +40,10 @@ export class UserRepository extends Repository<User> {
   async validateUserPassword(
     authCredentialsDto: AuthCredentialsDto,
   ): Promise<string> {
-    const { username, password } = authCredentialsDto;
-    const user = await this.findOne({ username });
+    const { email, password } = authCredentialsDto;
+    const user = await this.findOne({ email });
     if (user && user.validatePassword(password)) {
-      return user.username;
+      return user.email;
     }
 
     return null;

@@ -1,7 +1,7 @@
 import * as bcrypt from 'bcrypt';
 import { EntityRepository, Repository } from 'typeorm';
 
-import { ConflictException, InternalServerErrorException } from '@nestjs/common';
+import { ConflictException, InternalServerErrorException, Logger } from '@nestjs/common';
 
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { User } from './user.entity';
@@ -13,6 +13,8 @@ const errors = {
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
+  private logger = new Logger('UserRepository');
+
   private async hashPassword(password: string, salt: string): Promise<string> {
     return bcrypt.hash(password, salt);
   }
@@ -30,9 +32,19 @@ export class UserRepository extends Repository<User> {
     } catch (error) {
       const knownErrors = Object.keys(errors);
       if (!knownErrors.includes(error.code)) {
+        this.logger.error(
+          `Error: signUp | Payload: ${JSON.stringify(authCredentialsDto)}`,
+          error.stack,
+        );
         throw new InternalServerErrorException();
       }
 
+      this.logger.error(
+        `Error: signUp | Payload: ${JSON.stringify(
+          authCredentialsDto,
+        )} | Message: ${errors[error.code || 'default']}`,
+        error.stack,
+      );
       throw new ConflictException(errors[error.code || 'default']);
     }
   }

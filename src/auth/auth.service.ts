@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -9,6 +9,8 @@ import { UserRepository } from './user.repository';
 
 @Injectable()
 export class AuthService {
+  private logger = new Logger('AuthService');
+
   constructor(
     @InjectRepository(UserRepository) private userRepository: UserRepository,
     private jwtService: JwtService,
@@ -24,6 +26,7 @@ export class AuthService {
     );
 
     if (!email) {
+      this.logger.error(`Unauthorized ${authCredentialsDto.email}`);
       throw new UnauthorizedException({
         error: 'Unauthorized',
         key: 'invalid-credentials',
@@ -34,6 +37,7 @@ export class AuthService {
 
     const payload: IJwtPayload = { email };
     const accessToken = await this.jwtService.sign(payload);
+    this.logger.debug(`Signed in ${email}`);
 
     return { accessToken };
   }

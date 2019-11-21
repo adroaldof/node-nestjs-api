@@ -6,6 +6,7 @@ coverage
 db
 dist
 node_modules
+uploads
 
 ###############################################################################
 # Ignore these files

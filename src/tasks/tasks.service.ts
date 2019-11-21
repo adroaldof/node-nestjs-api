@@ -10,7 +10,7 @@ import { TaskRepository } from './task.repository';
 export class TasksService {
   constructor(private taskRepository: TaskRepository) {}
 
-  async list(user: User, filterDto?: FilterTaskDto): Promise<Task[]> {
+  async list(filterDto: FilterTaskDto, user: User): Promise<Task[]> {
     return this.taskRepository.getTasks(filterDto, user);
   }
 

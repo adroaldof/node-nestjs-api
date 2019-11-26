@@ -1,6 +1,3 @@
-import fs from 'fs';
-import readXlsxFile from 'read-excel-file/node';
-
 import {
     Controller, Get, Logger, Param, Post, Res, UploadedFile, UseInterceptors
 } from '@nestjs/common';
@@ -22,13 +19,5 @@ export class AppController {
   getFile(@Param('path') path, @Res() res) {
     this.logger.debug(path);
     return res.sendFile(path, { root: 'uploads' });
-  }
-
-  @Get('read')
-  readFile() {
-    console.log('***********************', '  ', '***********************');
-    readXlsxFile(fs.createReadStream('./uploads/contacts.xlsx')).then(rows => {
-      console.log('rows', rows);
-    });
   }
 }

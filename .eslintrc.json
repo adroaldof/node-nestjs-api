@@ -20,6 +20,7 @@
     "react/jsx-quotes": 0,
     "react/jsx-sort-prop-types": 0,
     "no-confusing-arrow": 0,
-    "no-multiple-empty-lines": 0
+    "no-multiple-empty-lines": 0,
+    "newline-before-return": 1
   }
 }

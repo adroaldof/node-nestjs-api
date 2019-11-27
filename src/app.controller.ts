@@ -1,10 +1,12 @@
-import fs from 'fs';
-import readXlsxFile from 'read-excel-file/node';
+import { diskStorage } from 'multer';
 
 import {
-    Controller, Get, Logger, Param, Post, Res, UploadedFile, UseInterceptors
+    Controller, Get, Logger, Param, Post, Res, UploadedFile, UploadedFiles, UseInterceptors
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+
+import { appHost, appPort } from './config/constants';
+import { fileUploadFilter, fileUploadRename } from './utils/file-upload';
 
 @Controller()
 export class AppController {
@@ -13,22 +15,56 @@ export class AppController {
   constructor() {}
 
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      fileFilter: fileUploadFilter,
+      storage: diskStorage({
+        destination: 'uploads',
+        filename: fileUploadRename,
+      }),
+    }),
+  )
   uploadFile(@UploadedFile() file) {
     this.logger.debug(file);
+    const { originalname, filename, size, path } = file;
+
+    return {
+      originalname,
+      filename,
+      size,
+      path: `${appHost}:${appPort}/${path}`,
+    };
   }
 
-  @Get('image/:path')
+  @Post('upload-multiple')
+  @UseInterceptors(
+    FilesInterceptor('files', 5, {
+      fileFilter: fileUploadFilter,
+      storage: diskStorage({
+        destination: 'uploads',
+        filename: fileUploadRename,
+      }),
+    }),
+  )
+  uploadFiles(@UploadedFiles() files) {
+    this.logger.debug(files);
+    const uploaded = [];
+
+    files.forEach(({ originalname, filename, size, path }) =>
+      uploaded.push({
+        originalname,
+        filename,
+        size,
+        path: `${appHost}:${appPort}/${path}`,
+      }),
+    );
+
+    return uploaded;
+  }
+
+  @Get('uploads/:path')
   getFile(@Param('path') path, @Res() res) {
     this.logger.debug(path);
     return res.sendFile(path, { root: 'uploads' });
-  }
-
-  @Get('read')
-  readFile() {
-    console.log('***********************', '  ', '***********************');
-    readXlsxFile(fs.createReadStream('./uploads/contacts.xlsx')).then(rows => {
-      console.log('rows', rows);
-    });
   }
 }

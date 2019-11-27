@@ -26,13 +26,13 @@ export class AppController {
   )
   uploadFile(@UploadedFile() file) {
     this.logger.debug(file);
-    const { originalname, filename, size } = file;
+    const { originalname, filename, size, path } = file;
 
     return {
       originalname,
       filename,
       size,
-      path: `${appHost}:${appPort}/image/${filename}`,
+      path: `${appHost}:${appPort}/${path}`,
     };
   }
 
@@ -50,19 +50,19 @@ export class AppController {
     this.logger.debug(files);
     const uploaded = [];
 
-    files.forEach(({ originalname, filename, size }) =>
+    files.forEach(({ originalname, filename, size, path }) =>
       uploaded.push({
         originalname,
         filename,
         size,
-        path: `${appHost}:${appPort}/image/${filename}`,
+        path: `${appHost}:${appPort}/${path}`,
       }),
     );
 
     return uploaded;
   }
 
-  @Get('image/:path')
+  @Get('uploads/:path')
   getFile(@Param('path') path, @Res() res) {
     this.logger.debug(path);
     return res.sendFile(path, { root: 'uploads' });
